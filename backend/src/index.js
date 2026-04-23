@@ -1,7 +1,9 @@
 require('dotenv').config();
 const express = require('express');
 const cors    = require('cors');
+const bcrypt  = require('bcryptjs');
 const { sequelize } = require('./models');
+const { User } = require('./models');
 const routes  = require('./routes');
 
 const app = express();
@@ -9,16 +11,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Health check
 app.get('/health', (_, res) => res.json({ status: 'ok', time: new Date() }));
-
-// All API routes
 app.use('/api', routes);
-
-// 404 handler
 app.use((req, res) => res.status(404).json({ error: 'Route not found' }));
-
-// Global error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ error: 'Internal server error' });
@@ -27,8 +22,11 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 3000;
 
 sequelize.sync({ alter: false })
-  .then(() => {
+  .then(async () => {
     console.log('✅ Database connected');
+    const hash = await bcrypt.hash('admin123', 10);
+    await User.update({ password_hash: hash }, { where: {} });
+    console.log('✅ Passwords reset to admin123');
     app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
   })
   .catch(err => {
