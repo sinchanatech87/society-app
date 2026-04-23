@@ -24,8 +24,6 @@ const PORT = process.env.PORT || 3000;
 sequelize.sync({ alter: false })
   .then(async () => {
     console.log('✅ Database connected');
-    const hash = await bcrypt.hash('admin123', 10);
-    await User.update({ password_hash: hash }, { where: {} });
     console.log('✅ Passwords reset to admin123');
     app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
   })
