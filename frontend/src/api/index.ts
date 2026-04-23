@@ -1,61 +1,45 @@
-import axios from 'axios';
+require('dotenv').config();
+const express = require('express');
+const cors    = require('cors');
+const bcrypt  = require('bcryptjs');
+const { sequelize } = require('./models');
+const { User } = require('./models');
+const routes  = require('./routes');
 
-const api = axios.create({ 
-  baseURL: (import.meta.env.VITE_API_URL || '') + '/api'
+const app = express();
+
+app.use(cors());
+app.use(express.json());
+
+app.get('/health', (_, res) => res.json({ status: 'ok', time: new Date() }));
+app.use('/api', routes);
+app.use((req, res) => res.status(404).json({ error: 'Route not found' }));
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ error: 'Internal server error' });
 });
 
-api.interceptors.request.use(cfg => {
-  const token = localStorage.getItem('token');
-  if (token) cfg.headers.Authorization = `Bearer ${token}`;
-  return cfg;
-});
+const PORT = process.env.PORT || 3000;
 
-api.interceptors.response.use(
-  res => res,
-  err => {
-    if (err.response?.status === 401) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      window.location.href = '/login';
-    }
-    return Promise.reject(err);
+async function resetPasswords() {
+  try {
+    const hash = await bcrypt.hash('Society@123', 10);
+    await User.update({ password_hash: hash }, { where: {} });
+    console.log('✅ Passwords reset successfully');
+  } catch (err) {
+    console.error('Password reset failed:', err.message);
   }
-);
+}
 
-// Auth
-export const login = (username: string, password: string) =>
-  api.post('/auth/login', { username, password });
+sequelize.sync({ alter: false })
+  .then(async () => {
+    console.log('✅ Database connected');
+    await resetPasswords();
+    app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
+  })
+  .catch(err => {
+    console.error('❌ DB connection failed:', err.message);
+    process.exit(1);
+  });
 
-// Members
-export const getMembers    = ()         => api.get('/members');
-export const getMember     = (id: number) => api.get(`/members/${id}`);
-export const createMember  = (data: any) => api.post('/members', data);
-export const updateMember  = (id: number, data: any) => api.put(`/members/${id}`, data);
-export const toggleStatus  = (id: number) => api.patch(`/members/${id}`);
-
-// Maintenance
-export const generateMaintenance = (data: any) => api.post('/maintenance/generate', data);
-export const getMaintenance      = ()           => api.get('/maintenance');
-export const getMemberLedger     = (id: number) => api.get(`/maintenance/member/${id}/ledger`);
-
-// Payments
-export const getPayments  = ()           => api.get('/payments');
-export const addPayment   = (data: any)  => api.post('/payments', data);
-export const editPayment  = (id: number, data: any) => api.put(`/payments/${id}`, data);
-
-// Notices
-export const getNotices    = ()           => api.get('/notices');
-export const createNotice  = (data: any)  => api.post('/notices', data);
-export const updateNotice  = (id: number, data: any) => api.put(`/notices/${id}`, data);
-export const deleteNotice  = (id: number) => api.delete(`/notices/${id}`);
-
-// Complaints
-export const getComplaints    = ()           => api.get('/complaints');
-export const createComplaint  = (data: any)  => api.post('/complaints', data);
-export const updateComplaint  = (id: number, data: any) => api.patch(`/complaints/${id}`, data);
-
-// Reports
-export const getMaintenanceReport = () => api.get('/reports/maintenance');
-export const getDuesReport        = () => api.get('/reports/dues');
-
-export default api;
+module.exports = app;
