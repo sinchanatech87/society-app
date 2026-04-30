@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+//mobile resposive update 
 import { StatCard, TableCard, Th, Td, Pill, Loader } from '../components/UI';
 import { getDuesReport, getMaintenanceReport, getPayments } from '../api';
 import { useAuth } from '../context/AuthContext';
