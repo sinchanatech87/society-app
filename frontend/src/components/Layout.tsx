@@ -11,9 +11,16 @@ const Layout: React.FC = () => {
   return (
     <div style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
       <Sidebar />
-      <main style={{ flex: 1, overflowY: 'auto', padding: '24px 28px' }}>
+      <main style={{ flex: 1, overflowY: 'auto', padding: '24px 28px' }} className="main-content">
         <Outlet />
       </main>
+      <style>{`
+        @media (max-width: 768px) {
+          .main-content {
+            padding: 70px 16px 80px 16px !important;
+          }
+        }
+      `}</style>
     </div>
   );
 };
