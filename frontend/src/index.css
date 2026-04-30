@@ -73,3 +73,42 @@ input, select, textarea {
 input:focus, select:focus, textarea:focus { border-color: var(--accent); }
 
 button { cursor: pointer; font-family: 'DM Sans', sans-serif; }
+
+/* ── MOBILE RESPONSIVE ──────────────────────────────── */
+@media (max-width: 768px) {
+  /* Stat grids */
+  .stat-grid-4 {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  /* Two column layouts */
+  .two-col {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Tables */
+  table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  /* Modals */
+  .modal-box {
+    width: 95vw !important;
+    margin: 0 10px;
+    max-height: 90vh;
+  }
+
+  /* Page headers */
+  .page-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 12px;
+  }
+
+  /* Buttons full width on mobile */
+  .btn-full-mobile {
+    width: 100%;
+  }
+}

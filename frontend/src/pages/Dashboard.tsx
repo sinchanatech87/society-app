@@ -43,14 +43,14 @@ const Dashboard: React.FC = () => {
       </div>
 
       {/* Stat cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 20 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 20 }} className="stat-grid-4">
         <StatCard label="Total Units"    value={24}    sub="19 Flats · 5 Shops" />
         <StatCard label="Apr Collection" value={`₹${collected.toLocaleString()}`} sub={`of ₹${totalDue.toLocaleString()} due`} color="var(--warn)" />
         <StatCard label="Collection %"   value={`${pct}%`} sub={`${dues.length} members pending`} color={pct >= 80 ? 'var(--success)' : 'var(--warn)'} />
         <StatCard label="Total Dues"     value={`₹${totalOutstanding.toLocaleString()}`} sub="Outstanding balance" color="var(--danger)" />
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 20 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }} className="two-col">
         {/* Progress */}
         <div className="card">
           <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text2)', marginBottom: 14 }}>Collection Status</div>
